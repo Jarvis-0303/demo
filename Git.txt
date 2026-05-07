@@ -1,0 +1,30 @@
+GIT
+create txt
+ls
+
+git log --oneline
+
+3rd commit
+
+git revert HEAD
+
+ls
+
+git revert HEAD~2
+
+ls
+
+git log --online 
+
+
+# Reverts everything from HEAD down to (but excluding) HEAD~2
+git revert HEAD~2..HEAD
+
+git revert HEAD HEAD~1
+
+
+# Stages the reverts without committing them yet
+git revert --no-commit HEAD~2..HEAD
+
+# Create one single commit for the entire restoration
+git commit -m "Revert repository back to the state of the 1st commit"
