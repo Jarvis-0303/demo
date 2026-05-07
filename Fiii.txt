@@ -1,0 +1,24 @@
+Q1 attach screenshots and highlight each and every step  my prn is 260240123010
+1.create a custom VPC with CIDR Block  10.0.0.0/16 with named as "VPC_<PRN>"
+
+
+
+
+Q2
+create a vm instance of your choice on vm ware  virtual box  and do the following and capture logs / snapshots oof each steps
+
+1. build a simple nginx-image .tag is as "prn-ngnix:v1"
+2. run the image . install curl inside the container and create new image from the same running container with tag:v2
+3.push the image created in step2 to docker hub.
+ 
+Q3
+
+Prn is 260240123010
+
+Create a VM instance of your choice on vm ware  and do the following and capture logs/snapshots of each step
+
+1.Create a new repository on github with your prn
+
+2.Initialize a  local repository . create a new branch name ‘ feature / prn . create a file exam_details.txt and add your name and prn
+
+3.Merge the branch into main branch . push the changes to remote github repository which is create in first step
