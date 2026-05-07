@@ -1,0 +1,93 @@
+4...….
+
+Q1. Docker Compose: Nginx Static Website   
+
+Create folder and file: mkdir website and echo "Hello from Docker Compose" > website/index.html   
+
+Create docker-compose.yml:
+
+services:
+  web:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./website:/usr/share/nginx/html
+
+Run docker-compose up -d and verify at http://localhost:8080
+
+
+Q2. Docker Compose: Python Script Container   
+
+Create app.py: print("Hello from Python Container")   
+
+Create Dockerfile: FROM python:3.9-slim followed by COPY app.py /app.py and CMD ["python", "/app.py"].  
+
+Create docker-compose.yml
+
+services:
+  python_app:
+    build: .
+
+
+Run docker-compose up
+
+Q3. Docker Compose: MySQL with Volume   
+
+Create docker-compose.yml
+
+
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
+
+Run docker-compose up -d
+
+
+Enter MySQL: docker exec -it <container_name> mysql -uroot -proot -e "USE testdb; CREATE TABLE test (id INT);"
+
+Restart docker-compose restart and verify the table still exists.
+
+Q4. Docker Compose: One Volume with 3 Nginx Containers   
+
+Create docker-compose.yml
+
+services:
+  nginx1:
+    image: nginx
+    ports:
+      - "8081:80"
+    volumes:
+      - shared-data:/usr/share/nginx/html
+    command: /bin/bash -c "echo 'Hello from Container 1' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+  nginx2:
+    image: nginx
+    ports:
+      - "8082:80"
+    volumes:
+      - shared-data:/usr/share/nginx/html
+    command: /bin/bash -c "echo 'Hello from Container 2' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+  nginx3:
+    image: nginx
+    ports:
+      - "8083:80"
+    volumes:
+      - shared-data:/usr/share/nginx/html
+    command: /bin/bash -c "echo 'Hello from Container 3' > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+volumes:
+  shared-data:
+
+Verify output at http://localhost:8081, http://localhost:8082, and http://localhost:8083.
+
+
+
+
+
+

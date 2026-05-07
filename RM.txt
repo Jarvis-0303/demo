@@ -1,0 +1,39 @@
+sudo lsof -i :80
+# OR
+sudo netstat -tulnp | grep :80
+
+
+
+
+sudo kill -9 <PID>
+
+
+sudo sed -i '/listen 80;/d' /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl restart nginx
+
+
+sudo sed -i '/Listen 80/d' /etc/apache2/ports.conf
+sudo systemctl restart apache2
+
+
+sudo ufw delete allow 80
+sudo ufw reload
+
+
+sudo firewall-cmd --zone=public --remove-port=80/tcp --permanent
+sudo firewall-cmd --reload
+
+
+
+docker ps
+
+
+docker stop <container_id_or_name>
+
+docker rm <container_id_or_name>
+
+
+docker images
+
+docker rmi <image_name_or_id>

@@ -1,0 +1,95 @@
+2.........
+
+Assignment 2: Docker Basics
+
+1: Pull and Run Image   
+
+Pull image: docker pull nginx   
+
+Run container: docker run -d nginx   
+
+Check containers: docker ps   
+
+Stop container: docker stop <container_id>   
+
+Remove container: docker rm <container_id>   
+
+
+2: Image Commands Practice   
+
+Pull image: docker pull alpine   
+
+List images: docker images   
+
+Inspect image: docker inspect alpine   
+
+Remove image: docker rmi alpine   
+
+Trying to remove a running container's image will result in an error because the running container is actively utilizing the image's filesystem layers.  
+
+
+3: Container Commands   
+
+Run interactive mode: docker run -it ubuntu /bin/bash   
+
+Execute commands inside: ls and pwd   
+
+Exit container: Type exit and press Enter.  
+
+List all containers: docker ps -a   
+
+Restart container: docker start <container_id>   
+
+
+4: Naming and Renaming   
+
+Run named container: docker run -d --name web_server nginx   
+
+Verify name: docker ps   
+
+Stop container: docker stop web_server   
+
+Rename container: docker rename web_server my_server   
+
+Remove container: docker rm my_server   
+
+
+5: Tagging Docker Image   
+
+Pull image: docker pull nginx   
+
+Tag version 1: docker tag nginx mynginx:v1   
+
+Tag latest: docker tag nginx mynginx:latest   
+
+List images: docker images   
+
+Remove tag: docker rmi mynginx:v1. This simply untags that reference; the base image remains intact.  
+
+
+6: Push Image to Docker Hub   
+
+Login: docker login   
+
+Tag image: docker tag mynginx:latest <your_username>/mynginx:v1   
+
+Push image: docker push <your_username>/mynginx:v1   
+
+Logout: docker logout   
+
+Verify by checking your repositories on the Docker Hub website.  
+
+
+7: Basic Networking and Port Mapping   
+
+Run with port mapping: docker run -d -p 8080:80 nginx   
+
+Open a browser and navigate to http://localhost:8080.  
+
+List networks: docker network ls   
+
+Inspect network: docker network inspect bridge   
+
+Port mapping creates a firewall rule that forwards traffic from a specific port on your host machine to a designated port inside the isolated Docker container.
+
+

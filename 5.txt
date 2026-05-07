@@ -1,0 +1,57 @@
+Assignment 5: Docker Swarm
+Q1. Docker Swarm: Nginx Service   
+
+Initialize Swarm: docker swarm init   
+
+Create service: docker service create --name nginx-service --replicas 2 -p 8080:88 nginx   
+
+Verify service: docker service ls and docker service ps nginx-service   
+
+Access Nginx via your web browser at localhost:8080
+
+
+Q2. Docker Swarm: Python Worker Service   Create app.py:  Pythonimport time
+while True:
+    print("Running in Swarm...")
+    time.sleep(5)
+Create Dockerfile:  DockerfileFROM python:3.9-slim
+COPY app.py /app.py
+CMD ["python", "-u", "/app.py"]
+
+Build image: docker build -t python-worker .   
+Deploy service: docker service create --name python-service --replicas 3 python-worker   
+Check logs: docker service logs python-service  
+Verify distribution: docker service ps python-service 
+
+Q3. Docker Swarm: Scaling Service   
+
+Deploy Nginx: docker service create --name nginx-service --replicas 2 nginx   
+
+Scale up: docker service scale nginx-service=5   
+
+Verify scaling: docker service ls and docker service ps nginx-service   
+
+Scale down: docker service scale nginx-service=1   
+
+Docker Swarm will gracefully stop the additional containers, leaving only one replica active.
+
+
+Q4. Docker Swarm: Rolling Update   
+
+Deploy older version: docker service create --name update-service --replicas 3 nginx:1.25   
+
+Apply rolling update: docker service update --image nginx:latest --update-parallelism 1 --update-delay 10s update-service   
+
+Verify status: docker service ps update-service   
+
+Roll back if necessary: docker service update --rollback update-service
+
+Q5. Docker Swarm: Remove Service and Leave Swarm   
+
+List services: docker service ls   
+
+Remove services: docker service rm nginx-service and docker service rm python-service   
+
+Verify deletion: docker service ls   
+
+Leave Swarm: docker swarm leave --force

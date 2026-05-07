@@ -1,0 +1,125 @@
+https://docs.docker.com/engine/install/ubuntu/
+
+# Add Docker's official GPG key:
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+
+
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo    groupadd    docker
+
+sudo     usermod    -aG    docker    $(whoami)
+
+sudo     reboot
+
+docker   ps
+
+
+
+
+
+
+
+FROM     python:3.9
+WORKDIR    /app
+COPY    app.py    .
+RUN    pip    install     mysql-connector-python
+CMD    ["python", "app.py"]
+
+docker run -d   --name mysql-db   -e MYSQL_ROOT_PASSWORD=root   -e MYSQL_DATABASE=school   -p 3306:3306   mysql:8
+
+#####network
+
+docker    network    create     mynet
+
+docker   run   -d   --network mynet   --name mysql-db   -e MYSQL_ROOT_PASSWORD=root   -e MYSQL_DATABASE=school   mysql:8
+
+docker   run   --network   mynet   --name   app   student-app
+
+docker   exec   -it   mysql-db mysql   -uroot   -proot
+USE school;
+SELECT * FROM students;
+
+
+1.....
+
+
+Q1. Create and Initialize Git Repository   
+
+Create and initialize the repository: mkdir git_lab && cd git_lab && git init   
+
+Create the file: echo "Your Name, $(date +%F)" > info.txt   
+
+Check status: git status   
+
+Stage and commit: git add info.txt followed by git commit -m "Initial commit"   
+
+Q2. Connect to GitHub and Push Code   
+
+Create the remote repository (git_lab_remote) manually on the GitHub website.  
+
+Link to remote: git remote add origin https://github.com/yourusername/git_lab_remote.git   
+
+Push code: git branch -M main followed by git push -u origin main   
+
+Refresh your GitHub repository page to verify the file is uploaded.  
+
+Q3. Clone Repository and Make Changes   
+
+Clone repository: git clone https://github.com/yourusername/git_lab_remote.git new_directory && cd new_directory   
+
+Create file: echo "Sample data" > data.txt   
+
+Stage and commit: git add data.txt followed by git commit -m "Added data file"   
+
+Push changes: git push origin main   
+
+Q4. Branching and Merging   
+
+Create branch: git branch feature   
+
+Switch branch: git checkout feature   
+
+Modify file: echo "Feature branch update" >> info.txt   
+
+Commit changes: git add info.txt followed by git commit -m "Updated info.txt"   
+
+Switch to main: git checkout main   
+
+Merge feature: git merge feature   
+
+Delete branch: git branch -d feature
+
+
+
+
+
+
+This verifies both containers can successfully read/write to the shared volume space.
+
+
+
+
+
+
+
+
+
+
+
