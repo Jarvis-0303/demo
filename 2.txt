@@ -13,7 +13,49 @@ Check containers: docker ps
 Stop container: docker stop <container_id>   
 
 Remove container: docker rm <container_id>   
+/////////
+/////////
 
+mkdir nginx-task
+cd nginx-task
+
+:: Write the Dockerfile
+echo FROM nginx:latest > Dockerfile
+
+:: Build the Docker image
+docker build -t 260240123010-nginx:v1 .
+
+:: Run the container in the background
+docker run -d --name my-nginx-container 260240123010-nginx:v1
+
+:: Access the running container
+docker exec -it my-nginx-container bash
+
+:: --- YOU ARE NOW INSIDE THE LINUX CONTAINER ---
+apt-get update && apt-get install -y curl
+exit
+:: --- YOU ARE NOW BACK IN WINDOWS CMD ---
+
+:: Commit the container to a new image tag
+docker commit my-nginx-container 260240123010-nginx:v2
+
+
+//////////////////////////////////////////////////////
+
+:: Log in to your Docker account
+docker login
+
+:: Tag the image with your Docker Hub repository prefix
+docker tag 260240123010-nginx:v2 jarvis0303/260240123010-nginx:v2
+
+:: Push it to Docker Hub
+docker push jarvis0303/260240123010-nginx:v2
+
+
+
+
+/////////////
+/////////////
 
 2: Image Commands Practice   
 
