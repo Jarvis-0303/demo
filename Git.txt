@@ -27,4 +27,47 @@ git revert HEAD HEAD~1
 git revert --no-commit HEAD~2..HEAD
 
 # Create one single commit for the entire restoration
-git commit -m "Revert repository back to the state of the 1st commit"
+git commit -m "Revert repository back to the state of the 1st commit"mkdir exam_project
+
+
+
+mkdir exam_project
+cd exam_project
+
+:: Initialize Git
+git init
+
+:: Create and switch to the feature branch
+git checkout -b feature/260240123010
+
+:: Create the details file
+echo Name: Ashutosh PRN: 260240123010 > exam_details.txt
+
+:: Stage and commit your changes
+git add exam_details.txt
+
+git config --global user.email "ashutoshchourasiaa03@gmail.com"
+
+git config --global user.name "Jarvis-0303"
+
+git commit -m "Added name and PRN"
+
+
+:: Create and switch to the main branch
+git checkout -b main
+
+:: Merge the feature branch into main
+git merge feature/260240123010
+
+:: Link to your remote GitHub repository
+git remote add origin https://github.com/Jarvis-0303/260240123010.git
+
+:: Push the main branch to GitHub
+git push -u origin main
+
+or
+git push -f origin main
+
+
+
+
