@@ -1,0 +1,113 @@
+
+Asymm. Key :
+openssl genpkey -algorithm RSA -out bank_pvt.pem
+openssl rsa -pubout -in bank/bank_pvt.pem -out bank/bank_pub.pem 
+openssl pkeyutl -encrypt -pubin -in bank/bank_pub.pem -in cl1/cl1_msg.txt -out cl1/cl1_msg.enc
+openssl pkeyutl -decrypt -inkey bank/bank_pvt.pem -in bank/cl1_msg.enc -out bank/cl1_msg.dec 
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Symm key :
+openssl rand -base64 32 > secret.key
+openssl enc -aes-256-cbc -salt -in message.txt -out message.txt.enc -pass file:./secret.key
+openssl enc -d -aes-256-cbc -in message.txt.enc -out message_decrypted.txt -pass file:./secret.key
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Certificate :
+openssl genpkey -algorithm RSA -out root.key
+#openssl req -new -key root.key -out root.csr
+openssl req -new -x509 -key sign.key -out sign.crt -days 365 
+openssl x509 -in root.crt -text -noout
+openssl pkcs12 -export -out sign.pfx -inkey sign.key -in sign.crt
+
+subCA
+openssl x509 -req -in sub.csr -CA root.crt -CAkey root.key -CAcreateserial -out sub.crt -days 1825
+
+Cert:
+openssl x509 -req -in server.csr -CA sub.crt -CAkey sub.key -CAcreateserial -out server.crt -days 365
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Hashing :
+openssl dgst -sha256 message.txt
+openssl dgst -sha256 message.txt > message.txt.sha256
+openssl dgst -sha256 -verify message.txt.sha256 message.txt
+
+
+#2
+echo "Hello World" > sample.txt 
+openssl dgst -md5 sample.txt
+openssl dgst -sha256 sample.txt 
+openssl dgst -sha512 sample.txt 
+
+openssl dgst -md5 sample.txt > md5_before.txt 
+openssl dgst -sha256 sample.txt > sha256_before.txt 
+openssl dgst -sha512 sample.txt > sha512_before.txt
+
+echo "Hello World Modified" > sample.txt
+openssl dgst -md5 sample.txt > md5_after.txt 
+openssl dgst -sha256 sample.txt
+openssl dgst -sha512 sample.txt 
+
+
+cat md5_before.txt 
+cat sha256_before.txt 
+cat sha512_before.txt 
+Generate current hashes: 
+openssl dgst -md5 sample.txt 
+openssl dgst -sha256 sample.txt 
+openssl dgst -sha512 sample.txt
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Sign & Verify :
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+openssl dgst -sha256 -sign private.pem -out message.txt.sig message.txt
+openssl dgst -sha256 -verify public.pem -signature message.txt.sig message.txt
+
+
+
+
+...........................................................
+
+ufw disable
+
+cd ashu
+
+cd /etc/apache2/sites-available
+
+vim ashu-ssl.conf
+
+pwd
+
+/home/root1/Ashu/ filename or .pem
+
+<VirtualHost *:443>
+    ServerName      www.ashu.com
+    DocumentRoot    /var/www/html
+    SSLEngine on
+    SSLCertificateFile /home/root1/Ashu/www.ashu.com.pem
+    SSLCertificateKeyFile /home/root1/Ashu/ashu-key.pem
+    SSLCACertificateFile /home/root1/Ashu/rootCA.crt
+</VirtualHost>
+
+ a2enmod ssl
+
+a2ensite ashu-ssl
+systemctl restart apache2
+
+vim /etc/hosts
+add\
+ip and www.ashu.com
+
+host -t a www.ashu.com
+
+go to setting 
+cert
+import
+ashu 
+ rootca.crt
+
+
+
+
+
