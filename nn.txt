@@ -1,0 +1,189 @@
+PF sense
+
+press 2
+
+1
+y
+n
+enter 
+n
+then enter 
+configure lan
+
+press 2
+n
+enter you lan ip 192.168.25.5
+
+cidr 24
+enter
+n
+n
+n
+enter
+
+press 3
+
+login to pfsense
+
+pfsense
+home.arpa
+2.pfsense.pool.ntp.org
+asia
+
+ip 
+cidr
+reload
+package manager 
+available package
+squid
+
+proxy sever 
+authentication
+local
+
+
+
+
+
+...........................................
+
+
+
+
+nginx Loadbalancing + Reverse Proxy :-
+
+Cd /etc/nginx/
+Sudo vim nginx.conf
+
+ Loadbalancing
+
+ 36     include /etc/nginx/conf.d/*.conf;
+ 37     upstream backend {
+ 38         server 192.168.25.10;
+ 39         server 192.168.25.20;
+ 40     }
+ 41     server {
+ 42         listen       80;
+ 43 #        listen       [::]:80;
+ 44 #        server_name  _;
+ 45 #        root         /usr/share/nginx/html;
+ 46 
+ 47         # Load configuration files for the default server block.
+ 48         include /etc/nginx/default.d/*.conf;
+ 49 
+ 50         error_page 404 /404.html;
+ 51         location = /404.html {
+ 52         }
+ 53         location = / {
+ 54                 proxy_pass http://backend/;
+ 55         }
+ 56         location = /cdac {
+ 57                 proxy_pass http://192.168.25.10/;
+
+
+
+
+
+
+............................................
+
+
+
+NGINX
+
+NOTE: set iptables before (remove REJECT rule from FORWARD and add MASQUERADE in NAT POSTROUTING)
+
+Sudo setenforce 0
+
+Sudo apt install nginx
+Sudo systemctl status nginx
+
+Cd /etc/nginx/
+Sudo vim nginx.conf
+
+ 41     server {
+ 42         listen       80;
+ 43         #listen       [::]:80;
+ 44         #server_name  _;
+ 45         #root         /usr/share/nginx/html;
+
+
+
+
+# Load Balancer
+Accord Line 37 
+ upstream backend {
+          server 192.168.35.10;
+          server 192.168.25.20 weight 5;
+      }
+ 	location / {
+               	 	 proxy_pass http://backend/;
+         	}
+
+# for different pages
+Accord Line 58 for 
+
+              location / {
+               	 	 proxy_pass http://192.168.25.20/;
+         	}
+ 
+         location /cdac{
+                 	proxy_pass http://192.168.35.10/;
+         	}
+ 
+Browser:	192.168.74.227/
+Browser:	192.168.74.227/cdac
+
+Note: ON client web server should be run
+
+
+
+
+......................................
+
+
+
+
+Snort :-
+
+Cd  /etc/snort
+Sudo vim snort.conf
+ --> 	ipvar HOME_NET 192.168.35.0/24
+ --> 	ipvar EXTERNAL_NET !$HOME_NET
+ -->	var RULE_PATH /etc/snort/rules
+ -->	var SO_RULE_PATH /etc/snort/so_rules
+ -->	var PREPROC_RULE_PATH /etc/snort/preproc_rules
+ -->	var WHITE_LIST_PATH /etc/snort/rules
+ -->	var BLACK_LIST_PATH /etc/snort/rules
+
+(make sure to enable this in file)
+
+Cd  /etc/snort/rules
+Sudo vim local.rules
+
+alert icmp any any -> any any (msg:"Test ping";sid:1000013;)
+alert udp any any -> any 53 (msg:”LAN searching facebook”;content:”facebook”;nocase;sid:952145;)
+alert tcp $EXTERNAL_NET any -> 192.168.74.227 22 (msg:"Test SSH";sid:1000003;)
+alert icmp any any -> 192.168.74.227 any (msg:"Test big_data ping";dsize:>128;sid:1000004;)
+alert icmp any any -> 192.168.74.227 any (msg:"Ping of Death";detection_filter:track by_src,count 20,seconds 60;sid:1000044;)
+alert tcp any any -> 192.168.74.227 80 (msg:"flood web flow";flags:S;detection_filter:track by_src,count 20,seconds 60;sid:1000033;)
+
+for logs :-
+sudo snort -A console -i ens160 -c /etc/snort/snort.conf -l /var/log/snort/
+				(OR)
+sudo cat /var/log/snort/alert.fast
+
+
+................................................
+
+
+
+
+
+
+
+
+
+
+
+
