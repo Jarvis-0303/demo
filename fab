@@ -1,0 +1,74 @@
+PF sense
+
+press 2
+
+1
+y
+n
+enter 
+n
+then enter 
+configure lan
+
+press 2
+n
+enter you lan ip 192.168.25.5
+
+cidr 24
+enter
+n
+n
+n
+enter
+
+press 3
+
+login to pfsense
+
+pfsense
+home.arpa
+2.pfsense.pool.ntp.org
+asia
+
+ip 
+cidr
+reload
+package manager 
+available package
+squid
+
+proxy sever 
+authentication
+local
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
