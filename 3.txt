@@ -1,94 +1,130 @@
-3........
 
-Assignment 3: Docker Volumes & Dockerfiles
-Q1. Docker Volume Persistence   
+1.for socket analyse
 
-Create volume: docker volume create data_vol   
+import socket
 
-Run container: docker run -d --name test1 -v data_vol:/data ubuntu sleep 1000   
+def scan_ports(target_ip):
+    print(f"Scanning {target_ip}...")
+    for port in range(1, 1025):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.1) 
+        result = sock.connect_ex((target_ip, port))
+        if result == 0:
+            try:
+                service = socket.getservbyport(port)
+            except OSError:
+                service = "Unknown"
+            print(f"Port {port} is OPEN - Service: {service}")
+        sock.close()
+scan_ports('127.0.0.1')  
+...........................................
 
-Create file and remove container: docker exec test1 bash -c "echo 'hello' > /data/file.txt" followed by docker rm -f test1.  
+2.for log analyzer
 
-Start new container: docker run -it --rm -v data_vol:/data ubuntu cat /data/file.txt   
+import re
+from collections import Counter
 
-The file will still exist because the volume persists independently of the container lifecycle.  
+def analyze_log(file_path):
+    with open(file_path, 'r') as file:
+        logs = file.readlines()
+    
+    ips = []
+    error_404_count = 0
+    
+    for line in logs:
+        ip_match = re.search(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b', line)
+        if ip_match:
+            ips.append(ip_match.group())
+        if ' 404 ' in line:
+            error_404_count += 1
 
-Q2. Dockerfile - Python Application   
+    print(f"Total Requests: {len(logs)}")
+    print(f"Total 404 Errors: {error_404_count}")
+    
+    top_ips = Counter(ips).most_common(3)
+    print("Top 3 IPs:")
+    for ip, count in top_ips:
+        print(f"{ip}: {count} requests")
 
-Create app.py: print("Hello from Docker")   
+..............................................
 
-Create Dockerfile:  
+3. to print process name and id
 
-Dockerfile
-FROM python:3.9-slim
-COPY app.py /app.py
-CMD ["python", "/app.py"]
+#!/bin/bash
+lsof -i -P -n | grep LISTEN | awk '{print $1, $2, $9}'
 
-Build and run: docker build -t my-python-app . followed by docker run my-python-app.
 
-Q3. Dockerfile - Java Application   
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-Create Main.java: public class Main { public static void main(String[] args) { System.out.println("Hello Java"); } }   
 
-Create Dockerfile:  
+4. to check the email id ,ip,url
+import re
 
-Dockerfile
-FROM openjdk:11
-COPY Main.java /
-RUN javac Main.java
-CMD ["java", "Main"]
-Build and run: docker build -t my-java-app . followed by docker run my-java-app.  
+def extract_data(text):
+    emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
+    ips = re.findall(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b', text)
+    urls = re.findall(r'https?://[^\s]+', text)
+    
+    print("\n--- Extraction Results ---")
+    print(f"Emails: {emails}")
+    print(f"IPs: {ips}")
+    print(f"URLs: {urls}")
 
-Q4. Docker Volume with MySQL   
+if __name__ == "__main__":
+    # The input() function prompts the user and stores their response in 'user_text'
+    user_text = input("Please enter the text you want to analyze: ")
+    
+    # Pass the user's text into your function
+    extract_data(user_text)
+........
+import re
 
-Run MySQL: docker volume create db_vol && docker run -d --name mysql_db -e MYSQL_ROOT_PASSWORD=root -v db_vol:/var/lib/mysql mysql:latest   
+def extract_data(text):
+    emails = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text)
+    ips = re.findall(r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b', text)
+    urls = re.findall(r'https?://[^\s]+', text)
+    
+    print(f"Emails: {emails}")
+    print(f"IPs: {ips}")
+    print(f"URLs: {urls}")
 
-Insert data: docker exec -it mysql_db mysql -uroot -proot -e "CREATE DATABASE testdb; USE testdb; CREATE TABLE users(id INT); INSERT INTO users VALUES(1);"   
+# ADD THIS PART: Define some text and call the function
+if __name__ == "__main__":
+    sample_text = """
+    Please contact support@example.com for assistance. 
+    You can also visit our website at https://www.example.com.
+    The server IP address is 192.168.1.100.
+    Another email is admin@test-site.org.
+    """
+    
+    # Call the function and pass the sample text
+    extract_data(sample_text)
+...........
 
-Restart and verify: docker restart mysql_db and then docker exec -it mysql_db mysql -uroot -proot -e "USE testdb; SELECT * FROM users;" to verify data persists.  
 
-Q5. Dockerfile - Nginx Web Server   
+5.urls checker
 
-Create index.html: <h1>My Custom Nginx Page</h1>   
+import urllib.request
+import time
 
-Create Dockerfile:  
+def check_urls(urls):
+    for url in urls:
+        start = time.time()
+        try:
+            # We add a header because some websites block automated Python requests
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            response = urllib.request.urlopen(req, timeout=5)
+            elapsed = time.time() - start
+            print(f"{url} - Status: {response.getcode()} - Time: {elapsed:.2f}s")
+        except urllib.error.URLError as e:
+            print(f"{url} - Failed: {e.reason}")
+        except Exception as e:
+            print(f"{url} - Failed: {e}")
 
-Dockerfile
-FROM nginx:latest
-COPY index.html /usr/share/nginx/html/index.html
-Build and run: docker build -t custom-nginx . followed by docker run -d -p 8080:80 custom-nginx.  
+# This is the line you need to add! Pass it a list of URLs in brackets [ ]
+check_urls(['https://www.google.com', 'https://github.com', 'https://thiswebsitedoesnotexist123.com'])
 
-Verify by navigating to http://localhost:8080 in a browser.  
 
-Q6. Bind Mount vs Volume   
 
-Create directory/file: mkdir host_data && echo "data" > host_data/file.txt   
+.....................
 
-Run with bind mount: docker run -it --rm -v $(pwd)/host_data:/container_data ubuntu cat /container_data/file.txt   
-
-Difference: A bind mount links a specific, user-defined path on the host machine to the container, whereas a Docker volume is fully managed by Docker and stored in a specialized directory, making volumes safer and easier to migrate.  
-
-Q7. Dockerfile - Shell Script Execution   
-
-Create script.sh:  
-
-Bash
-#!/bin/sh
-echo "Current System Date:"
-date
-Create Dockerfile:  
-
-Dockerfile
-FROM alpine
-COPY script.sh /script.sh
-RUN chmod +x /script.sh
-CMD ["/script.sh"]
-Build and run: docker build -t shell-app . followed by docker run shell-app.  
-
-Q8. Shared Volume Between Containers   
-
-Create volume and run containers: docker volume create shared_vol, then docker run -d --name c1 -v shared_vol:/shared ubuntu sleep 1000 and docker run -d --name c2 -v shared_vol:/shared ubuntu sleep 1000.  
-
-Write data: docker exec c1 bash -c "echo 'Shared Text' > /shared/data.txt"   
-
-Read data: docker exec c2 cat /shared/data.txt   
